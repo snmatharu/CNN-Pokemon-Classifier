@@ -1,6 +1,3 @@
-# (c) 2018 Tongyu Zhou, Tingda Wang
-# preprocesses data found in /data and divides all images for test and training
-
 import glob, shutil
 import os, re, sys
 import numpy
@@ -41,11 +38,7 @@ def get_pokemon(filepath):
     return type_dict[id]
 
 def load(dict, path, primary = True, testsize = 0.2):
-    ''' 
-    loads dataset and divides them by type and test, training
-    primary denotes whether to divide based on primary or secondary types
-    testsize denotes the proportion devoted to the test batch
-    '''
+    
     src_dir = path
     dataset = list(glob.iglob(os.path.join(src_dir, "*.png")))
     type_dict = {}
@@ -69,23 +62,16 @@ def load(dict, path, primary = True, testsize = 0.2):
         sort(key, train, 'train', primary)
         sort(key, test, 'test', primary)
 
-# box modification code by hemagso
+
 def bbox_reducer(a,b):
-    """Reduces two bounding boxes tuples to a bounding box
-    encompassing both. The bounding box format expected is
     
-    (min_row, min_col, max_row, max_col)
-    
-    Used with the reduce function to merge bounding boxes
-    
-    """
     min_row = min(a[0],b[0])
     min_col = min(a[1],b[1])
     max_row = max(a[2],b[2])
     max_col = max(a[3],b[3])
     return (min_row, min_col, max_row, max_col)
 
-# optimization code by hemagso
+
 def optimize(image,new_size = (64,64),plot=False,square=True, id = None):
     image_bw = color.rgb2gray(image)
     image_countour = filters.sobel(image_bw)
@@ -114,11 +100,7 @@ def optimize(image,new_size = (64,64),plot=False,square=True, id = None):
             max_row += floor((len_col - len_row)/2)      
     
 
-    #We may have some out of bound stuff hapenning here
-#    if (max_row - min_row) > image.shape[0]:
-#        raise ValueError("ID = {id} - Bounding box height is greater than image height".format(id=id))
-#    if (max_col - min_col) > image.shape[1]:
-#        raise ValueError("ID = {id} - Bounding box width is greater than image width".format(id=id))
+   
 
     #If Bounding box exceeds image limits, we shift it inside
     if min_row < 0:
@@ -165,12 +147,6 @@ def optimize(image,new_size = (64,64),plot=False,square=True, id = None):
     return image_resize    
 
 def sort(type, dataset, datatype, primary = True):
-    '''
-    divide the pokemon into folders corresponding to their type 
-    given a datatype of test or training and the dataset of images
-    primary determines whether we sort type1 or type2 of a pokemon
-    Outputs a test or training directory of the sorted pokemon images
-    '''
     
     folder = 'type1_sorted/' if primary else 'type2_sorted/'
 
@@ -188,9 +164,7 @@ def sort(type, dataset, datatype, primary = True):
         mpimg.imsave(dst_dir, img_file)
 
 if __name__ == "__main__":        
-    # divides the sprite images into their respective types
-
-    # deletes the directory and reshuffles images each time 
+  
     try:
         shutil.rmtree('type1_sorted')
     except FileNotFoundError:
@@ -201,18 +175,15 @@ if __name__ == "__main__":
     except FileNotFoundError:
         pass
 
-    # reads the csv file to build type dict
+   
     typing = types('data/Pokemon-2.csv')
 
-    # loads icon dataset first
     load(typing, 'data/icons')
     load(typing, 'data/icons', primary = False)
     print("icons loaded")
-    
-    # load sprites from all games
+  
     game_sprites = [x[0] for x in os.walk('data/main-sprites')]
-    for game in game_sprites:
-        # we only load the main sprites, excluding shinies or backviews
+    for game in game_sprites
         if len(str(game).split('/')) <= 3: 
             load(typing, game) 
             load(typing, game, primary = False)
